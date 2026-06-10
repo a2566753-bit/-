@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أداة إضافة المنتجات للفيسبوك - تلقائياً</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 20px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    input[type="file"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    input[type="file"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+    }
+
+    .button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s;
+      display: inline-block;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button.secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+      display: block;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+      display: block;
+    }
+
+    .message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border-left: 4px solid #17a2b8;
+      display: block;
+    }
+
+    .progress-section {
+      display: none;
+    }
+
+    .progress-section.active {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e0e0e0;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .products-preview {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .product-item {
+      background: white;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border-left: 4px solid #667eea;
+      font-size: 12px;
+    }
+
+    .product-item strong {
+      color: #667eea;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .file-input-label {
+      display: block;
+      padding: 20px;
+      background: #f0f0f0;
+      border: 2px dashed #667eea;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .file-input-label:hover {
+      background: #f5f5f5;
+      border-color: #764ba2;
+    }
+
+    .file-name {
+      margin-top: 10px;
+      color: #333;
+      font-size: 12px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .step {
+      display: none;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .step-number {
+      background: #667eea;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 أداة إضافة المنتجات للفيسبوك - تلقائياً</h1>
+      <p>أضف آلاف المنتجات لكتالوج فيسبوك بنقرة واحدة</p>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <!-- Step 1: Upload CSV -->
+    <div class="step active" id="step1">
+      <div class="card">
+        <h2><span class="step-number">1</span>تحميل ملف المنتجات (CSV)</h2>
+        <p style="color: #666; margin-bottom: 20px; font-size: 14px;">يجب أن يحتوي الملف على الأعمدة: ID, Name, Price, Stock, Description, Image</p>
+        
+        <div class="form-group">
+          <div class="file-input-wrapper">
+            <input type="file" id="csvFile" accept=".csv" onchange="handleFileChange(event)">
+            <label for="csvFile" class="file-input-label">
+              📁 اضغط هنا أو اسحب الملف هنا
+            </label>
+            <div class="file-name" id="fileName"></div>
+          </div>
+        </div>
+
+        <button class="button" onclick="uploadCSV()" id="uploadBtn">📤 تحميل الملف</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Login to Facebook -->
+    <div class="step" id="step2">
+      <div class="card">
+        <h2><span class="step-number">2</span>تسجيل الدخول للفيسبوك</h2>
+        <p style="color: #666; margin-bottom: 20px; font-size: 14px;">سيتم فتح نافذة متصفح جديدة لتسجيل الدخول</p>
+        
+        <button class="button" onclick="loginFacebook()">🔐 تسجيل الدخول للفيسبوك</button>
+        <button class="button secondary" onclick="skipLogin()" style="margin-right: 10px;">تخطي</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Start Adding Products -->
+    <div class="step" id="step3">
+      <div class="card">
+        <h2><span class="step-number">3</span>بدء إضافة المنتجات</h2>
+        <div class="products-preview" id="productsPreview" style="display: none;">
+          <strong>معاينة المنتجات:</strong>
+          <div id="previewList"></div>
+        </div>
+        
+        <button class="button" onclick="startAdding()" id="startBtn" disabled style="opacity: 0.5;">▶️ بدء إضافة المنتجات</button>
+        <p style="color: #666; margin-top: 10px; font-size: 13px;">⚠️ لا تغلق نافذة المتصفح أثناء العملية</p>
+      </div>
+    </div>
+
+    <!-- Progress Section -->
+    <div class="progress-section" id="progressSection">
+      <div class="card">
+        <h2>📊 تقدم العملية</h2>
+        <div class="progress-text" id="progressText">0 / 0</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+        </div>
+        <div class="loading" id="progressLoading" style="display: block;">
+          <div class="spinner"></div>
+          <p id="progressStatus">جاري إضافة المنتجات...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p id="loadingText">جاري المعالجة...</p>
+    </div>
+  </div>
+
+  <script>
+    let uploadedFile = null;
+    let productsCount = 0;
+
+    function handleFileChange(event) {
+      uploadedFile = event.target.files[0];
+      const fileName = document.getElementById('fileName');
+      if (uploadedFile) {
+        fileName.textContent = '✓ الملف: ' + uploadedFile.name + ' (' + (uploadedFile.size / 1024 / 1024).toFixed(2) + ' MB)';
+      }
+    }
+
+    function showMessage(msg, type) {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = msg;
+      messageEl.className = 'message ' + type;
+      setTimeout(() => messageEl.style.display = 'none', 5000);
+    }
+
+    function showLoading(show, text = 'جاري المعالجة...') {
+      const loading = document.getElementById('loading');
+      loading.style.display = show ? 'block' : 'none';
+      if (text) {
+        document.getElementById('loadingText').textContent = text;
+      }
+    }
+
+    function switchStep(stepNum) {
+      document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+      document.getElementById('step' + stepNum).classList.add('active');
+    }
+
+    async function uploadCSV() {
+      if (!uploadedFile) {
+        showMessage('❌ اختر ملف CSV أولاً', 'error');
+        return;
+      }
+
+      showLoading(true, 'جاري تحميل الملف...');
+
+      try {
+        const formData = new FormData();
+        formData.append('file', uploadedFile);
+
+        const response = await fetch('/api/upload-csv', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+        showLoading(false);
+
+        if (response.ok) {
+          productsCount = data.count;
+          showMessage(`✅ تم تحميل ${data.count} منتج بنجاح`, 'success');
+          
+          // Show products preview
+          const previewList = document.getElementById('previewList');
+          previewList.innerHTML = data.preview.map(p => `
+            <div class="product-item">
+              <strong>${p.name}</strong> - السعر: ${p.price} - المخزون: ${p.stock}
+            </div>
+          `).join('');
+          document.getElementById('productsPreview').style.display = 'block';
+          document.getElementById('startBtn').disabled = false;
+          document.getElementById('startBtn').style.opacity = '1';
+
+          switchStep(2);
+        } else {
+          showMessage('❌ ' + data.error, 'error');
+        }
+      } catch (error) {
+        showLoading(false);
+        showMessage('❌ خطأ: ' + error.message, 'error');
+      }
+    }
+
+    async function loginFacebook() {
+      showLoading(true, 'جاري فتح نافذة الدخول...');
+
+      try {
+        const response = await fetch('/api/start-login', { method: 'POST' });
+        const data = await response.json();
+        showLoading(false);
+
+        if (response.ok) {
+          showMessage('✅ ' + data.message, 'info');
+          window.open(data.url, 'facebook_login', 'width=800,height=600');
+        }
+      } catch (error) {
+        showLoading(false);
+        showMessage('❌ خطأ: ' + error.message, 'error');
+      }
+    }
+
+    function skipLogin() {
+      switchStep(3);
+    }
+
+    async function startAdding() {
+      if (productsCount === 0) {
+        showMessage('❌ حمل الملف أولاً', 'error');
+        return;
+      }
+
+      document.getElementById('progressSection').classList.add('active');
+      document.getElementById('step3').style.display = 'none';
+
+      try {
+        const response = await fetch('/api/start-adding', { method: 'POST' });
+        const data = await response.json();
+
+        if (response.ok) {
+          showMessage('✅ بدأت عملية الإضافة', 'success');
+          updateProgress();
+        } else {
+          showMessage('❌ ' + data.error, 'error');
+        }
+      } catch (error) {
+        showMessage('❌ خطأ: ' + error.message, 'error');
+      }
+    }
+
+    async function updateProgress() {
+      const interval = setInterval(async () => {
+        try {
+          const response = await fetch('/api/progress');
+          const data = await response.json();
+
+          const percentage = data.percentage;
+          document.getElementById('progressFill').style.width = percentage + '%';
+          document.getElementById('progressFill').textContent = percentage + '%';
+          document.getElementById('progressText').textContent = `${data.current} / ${data.total}`;
+
+          if (!data.isRunning) {
+            clearInterval(interval);
+            showMessage(`✅ تمت إضافة جميع المنتجات (${data.total})`, 'success');
+            document.getElementById('progressLoading').style.display = 'none';
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }, 1000);
+    }
+
+    // Drag and drop
+    const fileInput = document.getElementById('csvFile');
+    const fileLabel = document.querySelector('.file-input-label');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      fileLabel.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+      fileLabel.style.background = '#e8e8ff';
+      fileLabel.style.borderColor = '#764ba2';
+    }
+
+    function unhighlight(e) {
+      fileLabel.style.background = '#f0f0f0';
+      fileLabel.style.borderColor = '#667eea';
+    }
+
+    fileLabel.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      fileInput.files = files;
+      handleFileChange({ target: { files: files } });
+    }
+  </script>
+</body>
+</html>
